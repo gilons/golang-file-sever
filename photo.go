@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-
 	"github.com/rs/xid"
 )
 
@@ -59,6 +58,10 @@ func savePhoto(w http.ResponseWriter, r *http.Request) {
 	processSave(w, r, photosFolder)
 }
 
+func getPhotoThumbnail(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func getPhoto(w http.ResponseWriter, r *http.Request) {
 	processGet(w, r, photosFolder)
 }
@@ -94,12 +97,19 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	FName := parentDir + ID + "." + filenames[len(filenames)-1]
+	writeThumbnail(FName)
 	w.Write([]byte(ID + "." + filenames[len(filenames)-1]))
 
 }
 func processGet(w http.ResponseWriter, r *http.Request, parentDir string) {
 	var vars = mux.Vars(r)
 	var fileName = vars["filename"]
+	var from = r.Header.Get("From")
+	fromInt, err := strconv.ParseInt(from, 10, 64)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	//First of check if Get is set in the URL
 	Filename := parentDir + fileName
 	if Filename == "" {
@@ -117,7 +127,18 @@ func processGet(w http.ResponseWriter, r *http.Request, parentDir string) {
 		http.Error(w, "File not found.", 404)
 		return
 	}
-
+	_, err = Openfile.Seek(fromInt, io.SeekStart)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	tempFile, err := os.Create(parentDir + "temp_" + fileName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	io.Copy(tempFile, Openfile)
+	Filename = parentDir + "temp_" + fileName
+	Openfile = tempFile
+	defer os.Remove(Filename)
 	//File is found, create and send the correct headers
 	rr, ww := io.Pipe()
 	//Get the Content-Type of the file
@@ -131,11 +152,14 @@ func processGet(w http.ResponseWriter, r *http.Request, parentDir string) {
 	//Get the file size
 	FileStat, _ := Openfile.Stat()                     //Get info from file
 	FileSize := strconv.FormatInt(FileStat.Size(), 10) //Get file size as a string
-
+	duration := getDuration(Filename)
+	fmt.Println(fromInt, FileSize, "yyyyyy")
 	//Send the headers
 	w.Header().Set("Content-Disposition", "attachment; filename="+Filename)
 	w.Header().Set("Content-Type", FileContentType)
+	w.Header().Set("Duration", strconv.Itoa(duration))
 	w.Header().Set("Content-Length", FileSize)
+	w.Header().Set("Duration", strconv.Itoa(duration))
 	go func() {
 		defer ww.Close()
 		if err != nil {

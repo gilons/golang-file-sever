@@ -1,0 +1,21 @@
+this server is dependent on ffmpeg . 
+to be installed on ubuntu 18.04 following the instructions below :
+
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4
+sudo apt-get update
+sudo apt-get install ffmpeg
+
+for thumbnailing, some nice libraries exist out there example 
+-- https://github.com/flavioribeiro/video-thumbnail-generator 
+this is a python library it can be used using system calls
+
+to produce thumbnails in golang , the library below can be used
+
+-- https://github.com/bakape/thumbnailer
+
+below is the command to genetate the thumbnail of a particular size for a video 
+ffmpeg -i Singuila_La_femme_de_quelquun_feat_Koffi_Olomid.mp4 -vframes 1 -an -s 400x222 -ss 30 OutputFile.jpg
+
+the duration of a determine using the library 
+mediainfo
+simply install by means of sudo apt install mediainfo
