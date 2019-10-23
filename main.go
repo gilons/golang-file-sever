@@ -22,7 +22,7 @@ func main() {
 	routes.HandleFunc("/video/save", saveVideo).Methods("POST")
 	routes.HandleFunc("/video/get/{filename}", getVideo).Methods("GET")
 	routes.HandleFunc("/video/thumbnail/get/{filename}", getVideoThumbnail).Methods("GET")
-	routes.HandleFunc("/others/save", saveOther).Methods("POST")
+	routes.HandleFunc("/other/save", saveOther).Methods("POST")
 	routes.HandleFunc("/other/get/{filename}", getOther).Methods("GET")
 
 	http.Handle("/", routes)
@@ -36,7 +36,7 @@ func writeThumbnail(fileName string) {
 	fileNameArr := strings.Split(fileName, ".")
 	outPutFile := fileNameArr[0] + "_thumbnail." + "jpeg"
 	cmd := exec.Command("ffmpeg", "-i", fileName, "-vframes", "1", "-an", "-s",
-		fmt.Sprintf("%dx%d", width, height), "-ss", "30", outPutFile)
+		fmt.Sprintf("%dx%d", width, height), "-ss", "1", outPutFile)
 	var buffer bytes.Buffer
 	cmd.Stdout = &buffer
 	err := cmd.Run()

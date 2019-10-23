@@ -35,11 +35,11 @@ func retrievePhotoInfo(w http.ResponseWriter, r *http.Request) (file, error) {
 		return file{}, err
 	}
 	fileInstance.File, fileInstance.FileHeader, err = r.FormFile("file")
-	fmt.Println(fileInstance.FileHeader.Filename, "********************")
 	if err != nil {
 		fmt.Println(err.Error())
 		return file{}, err
 	}
+	fmt.Println(fileInstance.FileHeader.Filename, "********************")
 	return fileInstance, nil
 
 }
@@ -67,7 +67,6 @@ func getPhoto(w http.ResponseWriter, r *http.Request) {
 }
 
 func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
-
 	fileInstance := file{}
 	fileInstance, err := retrievePhotoInfo(w, r)
 	if err != nil {
@@ -106,6 +105,7 @@ func processGet(w http.ResponseWriter, r *http.Request, parentDir string) {
 	var vars = mux.Vars(r)
 	var fileName = vars["filename"]
 	var from = r.Header.Get("From")
+	fmt.Println(from)
 	fromInt, err := strconv.ParseInt(from, 10, 64)
 	if err != nil {
 		fmt.Println(err.Error())
