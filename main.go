@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -24,6 +26,7 @@ func main() {
 	routes.HandleFunc("/video/thumbnail/get/{filename}", getVideoThumbnail).Methods("GET")
 	routes.HandleFunc("/other/save", saveOther).Methods("POST")
 	routes.HandleFunc("/other/get/{filename}", getOther).Methods("GET")
+	routes.HandleFunc("/delete/{filename}", deleteFile).Methods("POST")
 
 	http.Handle("/", routes)
 	log.Fatal(http.ListenAndServe(":8555", nil))
@@ -31,8 +34,8 @@ func main() {
 }
 
 func writeThumbnail(fileName string) {
-	width := 640
-	height := 360
+	width := 620
+	height := 1024
 	fileNameArr := strings.Split(fileName, ".")
 	outPutFile := fileNameArr[0] + "_thumbnail." + "jpeg"
 	cmd := exec.Command("ffmpeg", "-i", fileName, "-vframes", "1", "-an", "-s",
@@ -75,4 +78,32 @@ func getDuration(fileName string) int {
 		}
 	}
 	return 0
+}
+
+func deleteFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fileName := vars["filename"]
+	images, err := filepath.Glob("*/" + fileName)
+	fmt.Println(images, "-----", fileName)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	nameString := strings.Split(fileName, ".")
+	images1, err := filepath.Glob("*/" + nameString[0] + "_thumbnail.jpeg")
+	if images1 != nil {
+		for _, image := range images1 {
+			err = os.Remove(image)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+	}
+	if images != nil {
+		for _, image := range images {
+			err = os.Remove(image)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+	}
 }

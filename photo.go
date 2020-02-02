@@ -6,7 +6,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -77,16 +76,18 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 	filenames := strings.Split(fileInstance.FileHeader.Filename, ".")
 	fmt.Println(filenames[len(filenames)-1])
 	var file *os.File
-	images, err := filepath.Glob(parentDir + ID + ".*")
+	/*images, err := filepath.Glob(parentDir + ID + ".*")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	if images != nil {
-		file, err = os.Create(parentDir + ID + "." + filenames[len(filenames)-1])
-		if err != nil {
-			fmt.Println(err.Error())
+		for _, image := range images {
+			err = os.Remove(image)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 		}
-	}
+	}*/
 	file, err = os.Create(parentDir + ID + "." + filenames[len(filenames)-1])
 	if err != nil {
 		fmt.Println(err.Error())
