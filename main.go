@@ -37,6 +37,7 @@ func writeThumbnail(fileName string) {
 	width := 620
 	height := 1024
 	fileNameArr := strings.Split(fileName, ".")
+	fmt.Println("writing thumbnails ----")
 	outPutFile := fileNameArr[0] + "_thumbnail." + "jpeg"
 	cmd := exec.Command("ffmpeg", "-i", fileName, "-vframes", "1", "-an", "-s",
 		fmt.Sprintf("%dx%d", width, height), "-ss", "1", outPutFile)
