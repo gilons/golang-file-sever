@@ -34,8 +34,8 @@ func main() {
 }
 
 func writeThumbnail(fileName string) {
-	width := 620
-	height := 1024
+	width := 150
+	height := 250
 	fileNameArr := strings.Split(fileName, ".")
 	fmt.Println("writing thumbnails ----")
 	outPutFile := fileNameArr[0] + "_thumbnail." + "jpeg"
@@ -46,6 +46,26 @@ func writeThumbnail(fileName string) {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("could not generate frame  Deu to :", err.Error())
+	}
+	go reSizePhoto(outPutFile, 20, true)
+
+}
+
+func reSizePhoto(fileName string, size int, del bool) {
+	width := size
+	//height := 100
+	fileNameArr := strings.Split(fileName, ".")
+	fmt.Println("writing image resized ----")
+	outPutFile := fileNameArr[0] + fmt.Sprintf("_%dx%d", width, width) + ".jpeg"
+	cmd := exec.Command("ffmpeg", "-i", fileName, "-vf", fmt.Sprintf("scale=%d:-1", width), outPutFile)
+	var buffer bytes.Buffer
+	cmd.Stdout = &buffer
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("could not generate frame  Deu to :", err.Error())
+	}
+	if del == true {
+		delete(fileName)
 	}
 }
 
@@ -84,6 +104,10 @@ func getDuration(fileName string) int {
 func deleteFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fileName := vars["filename"]
+	delete(fileName)
+
+}
+func delete(fileName string) {
 	images, err := filepath.Glob("*/" + fileName)
 	fmt.Println(images, "-----", fileName)
 	if err != nil {
