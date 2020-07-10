@@ -13,7 +13,7 @@ import (
 
 	"github.com/gorilla/mux"
 )
-
+ 
 func main() {
 	var routes = mux.NewRouter()
 	routes.HandleFunc("/photo/save", savePhoto).Methods("POST")
