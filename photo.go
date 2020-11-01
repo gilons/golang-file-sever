@@ -71,11 +71,11 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	ID := generateID() + "_" + generateID() + "_" + generateID()
 	defer fileInstance.File.Close()
 	var filenames []string
 	var extention string
 	filenames = strings.Split(fileInstance.FileHeader.Filename, ".")
+	ID := fileInstance.FileHeader.Filename
 	if parentDir == "sounds/" {
 		extention = "mp3"
 	} else {
@@ -95,7 +95,7 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 			}
 		}
 	}*/
-	file, err = os.Create(parentDir + ID + "." + extention)
+	file, err = os.Create(parentDir + ID)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -104,14 +104,14 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	FName := parentDir + ID + "." + extention
+	FName := parentDir + ID
 	if parentDir == photosFolder {
-		go reSizePhoto(FName, 20, false)
-		go reSizePhoto(FName, 100, false)
+		reSizePhoto(FName, 60, false)
+		reSizePhoto(FName, 200, false)
 	} else if parentDir == videoFolder {
 		writeThumbnail(FName)
 	}
-	w.Write([]byte(ID + "." + extention))
+	w.Write([]byte(ID))
 
 }
 func processGet(w http.ResponseWriter, r *http.Request, parentDir string) {

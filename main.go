@@ -13,7 +13,7 @@ import (
 
 	"github.com/gorilla/mux"
 )
- 
+
 func main() {
 	var routes = mux.NewRouter()
 	routes.HandleFunc("/photo/save", savePhoto).Methods("POST")
@@ -47,7 +47,7 @@ func writeThumbnail(fileName string) {
 	if err != nil {
 		fmt.Println("could not generate frame  Deu to :", err.Error())
 	}
-	go reSizePhoto(outPutFile, 20, true)
+	reSizePhoto(outPutFile, 20, true)
 
 }
 
