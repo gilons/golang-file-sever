@@ -78,6 +78,7 @@ func processSave(w http.ResponseWriter, r *http.Request, parentDir string) {
 	ID := fileInstance.FileHeader.Filename
 	if parentDir == "sounds/" {
 		extention = "mp3"
+		ID = generateID() + "-" + generateID() + extention
 	} else {
 		extention = filenames[len(filenames)-1]
 	}
